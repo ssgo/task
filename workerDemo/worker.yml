@@ -1,0 +1,4 @@
+tasks:
+  - message.sms
+serverapp: task
+checkinterval: 3s
