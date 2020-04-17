@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"fmt"
 	"github.com/ssgo/config"
 	"time"
 )
@@ -14,7 +13,6 @@ var conf = struct {
 
 func loadConfig() {
 	config.LoadConfig("worker", &conf)
-	fmt.Println(conf)
 	if conf.CheckInterval == 0 {
 		conf.CheckInterval = config.Duration(10 * time.Second)
 	}

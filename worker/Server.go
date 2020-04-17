@@ -20,21 +20,21 @@ func Start() {
 		for _, taskName := range conf.Tasks {
 			fetchedTask := FetchTask(taskName)
 			if fetchedTask != nil {
-				logger.Info("new work", "task", taskName, "fetchedTask", fetchedTask)
+				logger.Info("new work", "taskName", taskName, "fetchedTask", fetchedTask)
 				f := workers[taskName]
 				if f == nil {
-					logger.Error("no worker for new work", "task", taskName, "fetchedTask", fetchedTask)
+					logger.Error("no worker for new work", "taskName", taskName, "fetchedTask", fetchedTask)
 				} else {
 					go func() {
 						ok := f(fetchedTask)
 						if ok {
-							logger.Info("work succeed", "task", taskName, "fetchedTask", fetchedTask)
+							logger.Info("work succeed", "taskName", taskName, "fetchedTask", fetchedTask)
 						} else {
-							logger.Error("work failed", "task", taskName, "fetchedTask", fetchedTask)
+							logger.Error("work failed", "taskName", taskName, "fetchedTask", fetchedTask)
 						}
 						ok2 := ConfirmTask(fetchedTask.Id, ok)
 						if !ok2 {
-							logger.Error("confirm failed", "task", taskName, "fetchedTask", fetchedTask)
+							logger.Error("confirm failed", "taskName", taskName, "fetchedTask", fetchedTask)
 						}
 					}()
 				}

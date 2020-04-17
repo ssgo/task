@@ -2,19 +2,24 @@ package worker
 
 import (
 	"github.com/ssgo/s"
+	"github.com/ssgo/u"
 	"strings"
 )
 
 type Task struct {
 	Group string
 	Name  string
-	Args  string
+	Args  map[string]interface{}
 }
 
 type FetchedTask struct {
 	Id   string
 	Time int64
 	Task Task
+}
+
+func (task *Task) ArgsTo(to interface{}) {
+	u.Convert(task.Args, to)
 }
 
 func FetchTask(taskName string) *FetchedTask {
@@ -26,7 +31,7 @@ func FetchTask(taskName string) *FetchedTask {
 	if r.Error != nil {
 		logger.Error(r.Error.Error())
 	}
-	r.To(fetchedTask)
+	_ = r.To(fetchedTask)
 	if fetchedTask.Id == "" {
 		return nil
 	}

@@ -1,6 +1,7 @@
 package task
 
 import (
+	"encoding/json"
 	"github.com/robfig/cron/v3"
 	"github.com/ssgo/s"
 	"github.com/ssgo/u"
@@ -15,10 +16,16 @@ type CronJob struct {
 	Spec    string
 	Args    string
 	Active  bool
+	//args    map[string]interface{}
 }
 
 func (job *CronJob) Run() {
-	createTask(Task{Group: job.Group, Name: job.Name, Args: job.Args})
+	args := make(map[string]interface{})
+	err := json.Unmarshal([]byte(job.Args), &args)
+	if err != nil {
+		logger.Error(err.Error(), "job", job)
+	}
+	createTask(Task{Group: job.Group, Name: job.Name, Args: args})
 }
 
 var cronJobs = make(map[int]*CronJob)
@@ -49,6 +56,12 @@ func checkCron(running *bool) {
 				return
 			}
 
+			//job.args = make(map[string]interface{})
+			//err := json.Unmarshal([]byte(job.Args), &job.args)
+			//if err != nil {
+			//	logger.Error(err.Error(), "job", job)
+			//}
+
 			if job.Active {
 				hash := u.Sha1String(u.Json(job))
 				if hash != job.hash {
@@ -57,16 +70,16 @@ func checkCron(running *bool) {
 					var newJobId cron.EntryID
 					newJobId, err = cronCron.AddJob(job.Spec, job)
 					if err != nil {
-						logger.Error(err.Error(), "group", job.Group, "name", job.Name, "spec", job.Spec, "args", job.Args)
+						logger.Error(err.Error(), "job", job)
 						continue
 					}
 
 					// 清除旧Job
 					if job.entryID != 0 {
 						cronCron.Remove(job.entryID)
-						logger.Info("update job", "group", job.Group, "name", job.Name, "spec", job.Spec, "args", job.Args)
+						logger.Info("update job", "job", job)
 					} else {
-						logger.Info("add job", "group", job.Group, "name", job.Name, "spec", job.Spec, "args", job.Args)
+						logger.Info("add job", "job", job)
 					}
 
 					job.hash = hash
@@ -78,7 +91,7 @@ func checkCron(running *bool) {
 					cronCron.Remove(job.entryID)
 				}
 				delete(cronJobs, jobId)
-				logger.Info("remove job", "group", job.Group, "name", job.Name, "spec", job.Spec, "args", job.Args)
+				logger.Info("remove job", "job", job)
 			}
 		}
 	} else {
@@ -89,7 +102,7 @@ func checkCron(running *bool) {
 					cronCron.Remove(job.entryID)
 				}
 				job.entryID = 0
-				logger.Info("remove job", "group", job.Group, "name", job.Name, "spec", job.Spec, "args", job.Args)
+				logger.Info("remove job", "job", job)
 			}
 			cronJobs = make(map[int]*CronJob)
 		}
