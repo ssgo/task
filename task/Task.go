@@ -61,7 +61,7 @@ func fetchTask(task Task) *FetchedTask {
 	redisConn.HSET("_task_doing", fetchedTask.Id, u.Json(fetchedTask))
 
 	// 如果有重复的任务清除之
-	n := redisConn.Do("LREM", pendingKey, 0, task.Args).Int()
+	n := redisConn.Do("LREM", pendingKey, 0, u.String(task.Args)).Int()
 	if n > 0 {
 		logger.Warning(fmt.Sprint("removed ", n, " same tasks"), "task", task)
 	}
