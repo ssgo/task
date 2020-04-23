@@ -11,11 +11,8 @@ var logger = log.New(u.ShortUniqueId())
 var caller *discover.Caller
 var workers = make(map[string]func(task *FetchedTask) bool)
 
-func Init() {
-	loadConfig()
-}
-
 func Start() {
+	loadConfig()
 	s.NewTimerServer("TaskWorker", conf.CheckInterval.TimeDuration(), func(running *bool) {
 		for _, taskName := range conf.Tasks {
 			fetchedTask := FetchTask(taskName)
@@ -43,6 +40,7 @@ func Start() {
 	}, func() {
 		caller = discover.NewCaller(nil, logger)
 	}, nil)
+	s.Start()
 }
 
 func RegisterWorker(taskName string, f func(task *FetchedTask) bool) {

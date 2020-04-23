@@ -10,6 +10,6 @@ require (
 	github.com/ssgo/discover v0.2.21
 	github.com/ssgo/log v0.2.21
 	github.com/ssgo/redis v0.2.21
-	github.com/ssgo/s v1.3.25
+	github.com/ssgo/s v1.3.26
 	github.com/ssgo/u v0.2.21
 )

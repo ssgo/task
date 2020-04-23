@@ -2,16 +2,13 @@ package main
 
 import (
 	"github.com/ssgo/log"
-	"github.com/ssgo/s"
 	"github.com/ssgo/task/worker"
 	"github.com/ssgo/u"
 )
 
 func main() {
 	worker.RegisterWorker("message.sms", sendSms)
-	worker.Init()
 	worker.Start()
-	s.Start()
 }
 
 func sendSms(task *worker.FetchedTask) bool {
